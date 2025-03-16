@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Disease Prediction</title>
+</head>
+<body>
+    <h1>Disease Prediction Form</h1>
+    <form action="/predict" method="POST">
+        <h2>Diabetes Inputs</h2>
+        <label>Pregnancies:</label>
+        <input type="number" name="pregnancies" required><br>
+        <label>Glucose:</label>
+        <input type="number" step="0.01" name="glucose" required><br>
+        <label>Blood Pressure:</label>
+        <input type="number" step="0.01" name="blood_pressure" required><br>
+        <label>Skin Thickness:</label>
+        <input type="number" step="0.01" name="skin_thickness" required><br>
+        <label>Insulin:</label>
+        <input type="number" step="0.01" name="insulin" required><br>
+        <label>BMI:</label>
+        <input type="number" step="0.01" name="bmi" required><br>
+        <label>Diabetes Pedigree Function:</label>
+        <input type="number" step="0.01" name="diabetes_pedigree_function" required><br>
+        <label>Age:</label>
+        <input type="number" name="age" required><br>
+
+        <h2>Stroke Inputs</h2>
+        <label>Gender:</label>
+        <select name="gender">
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+        </select><br>
+        <label>Age:</label>
+        <input type="number" step="0.01" name="age" required><br>
+        <label>Hypertension:</label>
+        <input type="number" name="hypertension" required><br>
+        <label>Heart Disease:</label>
+        <input type="number" name="heart_disease" required><br>
+        <label>Ever Married:</label>
+        <select name="ever_married">
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+        </select><br>
+        <label>Work Type:</label>
+        <select name="work_type">
+            <option value="Private">Private</option>
+            <option value="Self-employed">Self-employed</option>
+            <option value="Govt_job">Government Job</option>
+            <option value="children">Children</option>
+            <option value="Never_worked">Never Worked</option>
+        </select><br>
+        <label>Residence Type:</label>
+        <select name="residence_type">
+            <option value="Urban">Urban</option>
+            <option value="Rural">Rural</option>
+        </select><br>
+        <label>Average Glucose Level:</label>
+        <input type="number" step="0.01" name="avg_glucose_level" required><br>
+        <label>BMI:</label>
+        <input type="number" step="0.01" name="bmi" required><br>
+        <label>Smoking Status:</label>
+        <select name="smoking_status">
+            <option value="never smoked">Never Smoked</option>
+            <option value="formerly smoked">Formerly Smoked</option>
+            <option value="smokes">Smokes</option>
+            <option value="Unknown">Unknown</option>
+        </select><br>
+
+        <button type="submit">Predict</button>
+    </form>
+</body>
+</html>

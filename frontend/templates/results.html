@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Risk Predictions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+        }
+        .patient-container {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+        .patient-container h2 {
+            margin-bottom: 10px;
+        }
+        .risk {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .low-risk {
+            background-color: #d4edda; /* Green for low risk */
+            color: #155724;
+        }
+        .high-risk {
+            background-color: #f8d7da; /* Red for high risk */
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <h1>Patient Risk Predictions</h1>
+    {% for result in results %}
+    <div class="patient-container">
+        <h2>Patient {{ loop.index }}</h2>
+        <p><strong>Age:</strong> {{ result.patient_data.age }}</p>
+        <p><strong>Gender:</strong> {{ result.patient_data.gender }}</p>
+        <p><strong>BMI:</strong> {{ result.patient_data.bmi }}</p>
+        <p><strong>Glucose Level:</strong> {{ result.patient_data.glucose }}</p>
+
+        <!-- Diabetes Risk Section -->
+        <div class="risk {{ 'high-risk' if result.diabetes_risk.outcome == 1 else 'low-risk' }}">
+            <h3>Diabetes Risk</h3>
+            <p><strong>Prediction:</strong> {{ result.diabetes_risk.outcome }}</p>
+            <p><strong>Risk Probability:</strong> {{ result.diabetes_risk.risk_probability }}</p>
+        </div>
+
+        <!-- Stroke Risk Section -->
+        <div class="risk {{ 'high-risk' if result.stroke_risk.outcome == 1 else 'low-risk' }}">
+            <h3>Stroke Risk</h3>
+            <p><strong>Prediction:</strong> {{ result.stroke_risk.outcome }}</p>
+            <p><strong>Risk Probability:</strong> {{ result.stroke_risk.risk_probability }}</p>
+        </div>
+    </div>
+    {% endfor %}
+</body>
+</html>

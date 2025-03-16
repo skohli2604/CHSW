@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinical Trials Search</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 20px;
+        }
+        .trial-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+        }
+        .status {
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .status.completed { color: red; }
+        .status.recruiting { color: green; }
+        .location {
+            font-size: 14px;
+            color: gray;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="text-center">Clinical Trials Search</h2>
+        <div class="mb-3">
+            <input type="text" id="searchInput" class="form-control" placeholder="Enter condition (e.g., diabetes)">
+            <button class="btn btn-primary mt-2" onclick="fetchTrials()">Search</button>
+        </div>
+        <div id="trialsContainer"></div>
+    </div>
+
+    <script>
+        function fetchTrials() {
+            const condition = document.getElementById("searchInput").value.trim();
+            if (!condition) {
+                alert("Please enter a condition!");
+                return;
+            }
+
+            const url = `http://127.0.0.1:5001/search?condition=${encodeURIComponent(condition)}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => displayTrials(data))
+                .catch(error => {
+                    console.error("Error fetching trials:", error);
+                    document.getElementById("trialsContainer").innerHTML = "<p class='text-danger'>Failed to fetch trials. Please try again later.</p>";
+                });
+        }
+
+        function displayTrials(trials) {
+            const container = document.getElementById("trialsContainer");
+            container.innerHTML = "";
+
+            if (!trials || trials.length === 0) {
+                container.innerHTML = "<p class='text-danger'>No trials found.</p>";
+                return;
+            }
+
+            trials.forEach(trial => {
+                const statusClass = trial.Status.toLowerCase() === "recruiting" ? "recruiting" : "completed";
+                
+                const card = `
+                    <div class="trial-card">
+                        <h4>${trial.Title || "No Title Available"}</h4>
+                        <p><strong>Condition:</strong> ${trial.Condition.join(", ") || "Not Specified"}</p>
+                        <p class="status ${statusClass}">${trial.Status || "Unknown"}</p>
+                        <p><strong>NCT ID:</strong> ${trial.NCTId || "N/A"}</p>
+                    </div>
+                `;
+                container.innerHTML += card;
+            });
+        }
+    </script>
+</body>
+</html>
