@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8
+    platform: linux/x86_64  # <-- This forces Docker to use the x86_64 version
+    environment:
+      MYSQL_ROOT_PASSWORD: yourpassword
+      MYSQL_DATABASE: yourdb
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+
+  web:
+    build:
+      context: .
+    ports:
+      - "5001:5050"
+    depends_on:
+      - db
+    environment:
+      FLASK_APP: synthetictest.py
+      FLASK_ENV: development
+    volumes:
+      - .:/app
+
+volumes:
+  db_data:

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Vitals Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+        }
+        .patient-card {
+            background: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+        }
+        .patient-card:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .patient-card h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        p {
+            margin: 5px 0;
+        }
+        .risk {
+            font-weight: bold;
+        }
+        .risk-high {
+            color: red;
+        }
+        .risk-low {
+            color: green;
+        }
+        .card-content {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        .card-content p {
+            margin-bottom: 10px;
+        }
+        .label {
+            font-weight: bold;
+        }
+        .highlight {
+            color: #FF6347;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Patient Vitals Dashboard</h1>
+
+        <!-- Patient Cards -->
+        {% for patient in patients %}
+        <div class="patient-card">
+            <h2>{{ patient.name }}</h2>
+            <div class="card-content">
+                <div>
+                    <p><span class="label">Age:</span> {{ patient.age }}</p>
+                    <p><span class="label">Gender:</span> {{ patient.gender }}</p>
+                    <p><span class="label">Work Type:</span> {{ patient.work_type }}</p>
+                    <p><span class="label">Residence:</span> {{ patient.residence }}</p>
+                    <p><span class="label">Smoking Status:</span> {{ patient.smoking_status }}</p>
+                </div>
+                <div>
+                    <p><span class="label">BMI:</span> {{ patient.bmi }}</p>
+                    <p><span class="label">Ever Married:</span> {{ 'Yes' if patient.ever_married else 'No' }}</p>
+                    <p><span class="label">Hypertension:</span> {{ 'Yes' if patient.hypertension else 'No' }}</p>
+                    <p><span class="label">Heart Disease:</span> {{ 'Yes' if patient.heart_disease else 'No' }}</p>
+                </div>
+            </div>
+
+            <!-- Real-time Updating Vitals -->
+            <hr>
+            <h3>Real-time Vitals</h3>
+            <p><span class="label">Heart Rate:</span> <span id="heart-rate-{{ patient.id }}">{{ patient.heart_rate }}</span> bpm</p>
+            <p><span class="label">SpO2 Level:</span> <span id="spo2-{{ patient.id }}">{{ patient.spo2 }}</span>%</p>
+            <p><span class="label">Blood Pressure:</span> <span id="bp-{{ patient.id }}">{{ patient.systolic_bp }}/{{ patient.diastolic_bp }}</span> mmHg</p>
+            <p><span class="label">Glucose Level:</span> <span id="glucose-{{ patient.id }}">{{ patient.glucose }}</span> mg/dL</p>
+            <p><span class="label">Insulin Level:</span> <span id="insulin-{{ patient.id }}">{{ patient.insulin }}</span> μU/mL</p>
+            <p><span class="label">Skin Thickness:</span> <span id="skin-thickness-{{ patient.id }}">{{ patient.skin_thickness }}</span> mm</p>
+            <p><span class="label">Average Glucose Level:</span> <span id="avg-glucose-{{ patient.id }}">{{ patient.avg_glucose_level }}</span> mg/dL</p>
+
+            <!-- Risk Scores -->
+            <hr>
+            <h3>Health Risks</h3>
+            <p><span class="label risk">Diabetes Risk:</span> 
+                <span id="diabetes-risk-{{ patient.id }}" class="{{ 'risk-high' if patient.diabetes_risk >= 0.5 else 'risk-low' }}">
+                    {{ patient.diabetes_risk|round(2) }}
+                </span>
+            </p>
+            <p><span class="label risk">Stroke Risk:</span> 
+                <span id="stroke-risk-{{ patient.id }}" class="{{ 'risk-high' if patient.stroke_risk >= 0.5 else 'risk-low' }}">
+                    {{ patient.stroke_risk|round(2) }}
+                </span>
+            </p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        var socket = io();
+
+        socket.on("update_vitals", function(data) {
+            document.getElementById(`heart-rate-${data.patient_id}`).textContent = data.heart_rate;
+            document.getElementById(`spo2-${data.patient_id}`).textContent = data.spo2;
+            document.getElementById(`bp-${data.patient_id}`).textContent = `${data.systolic_bp}/${data.diastolic_bp}`;
+            document.getElementById(`glucose-${data.patient_id}`).textContent = data.glucose;
+            document.getElementById(`insulin-${data.patient_id}`).textContent = data.insulin;
+            document.getElementById(`skin-thickness-${data.patient_id}`).textContent = data.skin_thickness;
+            document.getElementById(`avg-glucose-${data.patient_id}`).textContent = data.avg_glucose_level.toFixed(2);
+
+            // Update Diabetes Risk
+            var diabetesRiskElement = document.getElementById(`diabetes-risk-${data.patient_id}`);
+            diabetesRiskElement.textContent = data.diabetes_risk.toFixed(2);
+            diabetesRiskElement.className = data.diabetes_risk >= 0.5 ? 'risk-high' : 'risk-low';
+
+            // Update Stroke Risk
+            var strokeRiskElement = document.getElementById(`stroke-risk-${data.patient_id}`);
+            strokeRiskElement.textContent = data.stroke_risk.toFixed(2);
+            strokeRiskElement.className = data.stroke_risk >= 0.5 ? 'risk-high' : 'risk-low';
+        });
+    </script>
+</body>
+</html>
